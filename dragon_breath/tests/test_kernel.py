@@ -29,7 +29,7 @@ class TestKernel(unittest.TestCase):
     def test_should_throw_exception_after_timeout(self):
         try:
             p = Kernel.spawn(MockWorker().run_forever)
-            Kernel.await(p, 1)
+            Kernel.await(p, 0.2)
             assert True == False
         except RuntimeError:
             assert True == True
