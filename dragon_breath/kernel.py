@@ -1,4 +1,3 @@
-from dragon_breath.process import *
 import threading
 import time
 
@@ -10,11 +9,11 @@ class Kernel(object):
         pass
 
     @classmethod
-    def spawn(cls, fun):
+    def spawn(cls, fun, args = None):
         if(cls.kernel is None):
             cls.kernel = Kernel()
         p = Process(cls.kernel)
-        t = threading.Thread(target=p.spawn, args={fun})
+        t = threading.Thread(target=p.spawn, kwargs={'fun':fun, 'args':args})
         t.start()
         pid = Pid()
         Kernel._process_map[pid] = p
@@ -43,10 +42,13 @@ class Process:
     def __init__(self, kernel):
         self._kernel = kernel
 
-    def spawn(self, fun):
+    def spawn(self, fun, args):
         self._thread = threading.current_thread()
         self._value = None
-        self._value = fun()
+        if(args is None):
+            self._value = fun()
+        else:
+            self._value = fun(*args)
 
     def is_alive(self):
         return self._get_thread().is_alive()

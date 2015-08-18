@@ -1,6 +1,7 @@
 import unittest
 import pytest
 import time
+import math
 
 from dragon_breath.kernel import *
 
@@ -35,6 +36,11 @@ class TestKernel(unittest.TestCase):
         finally:
             MockWorker.breakout = True
 
+    def test_should_pass_args_to_function(self):
+        p = Kernel.spawn(MockWorker().run_with_args, [10])
+        value = Kernel.await(p, 1)
+        assert 10240 == value
+
 class MockWorker:
     breakout = False
 
@@ -49,3 +55,14 @@ class MockWorker:
         while 1 == 1:
             if(MockWorker.breakout):
                 break
+
+    def run_with_args(self, y):
+        x = 0
+        count = y
+        while(x < count):
+            if(MockWorker.breakout):
+                break
+            time.sleep(.05)
+            x = x + 1
+            y = y + y
+        return y
