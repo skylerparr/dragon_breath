@@ -29,7 +29,7 @@ class TestKernel(unittest.TestCase):
     def test_should_throw_exception_after_timeout(self):
         try:
             p = Kernel.spawn(MockWorker().run_forever)
-            Kernel.await(p, 0.2)
+            Kernel.await(p, 0.05)
             assert True == False
         except RuntimeError:
             assert True == True
@@ -41,13 +41,17 @@ class TestKernel(unittest.TestCase):
         value = Kernel.await(p, 1)
         assert 10240 == value
 
+    def test_should_not_await_if_the_value_is_ready(self):
+        p = Kernel.spawn(self.return_value)
+        assert "bacon" == Kernel.await(p, 1)
+
 class MockWorker:
     breakout = False
 
     def do_lots_of_work(self):
         x = 0
         while(x < 5):
-            time.sleep(.1)
+            time.sleep(.01)
             x = x + 1
         return "eggs"
 
@@ -62,7 +66,7 @@ class MockWorker:
         while(x < count):
             if(MockWorker.breakout):
                 break
-            time.sleep(.05)
+            time.sleep(.01)
             x = x + 1
             y = y + y
         return y
