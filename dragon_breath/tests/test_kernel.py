@@ -10,6 +10,9 @@ class TestKernel(unittest.TestCase):
     def return_value(self):
         return "bacon"
 
+    def setUp(self):
+        MockWorker.breakout = False
+
     def test_should_only_create_one_kernel(self):
         p1 = Kernel.spawn(self.return_value)
         p2 = Kernel.spawn(self.return_value)
@@ -40,10 +43,12 @@ class TestKernel(unittest.TestCase):
         p = Kernel.spawn(MockWorker().run_with_args, [10])
         value = Kernel.await(p, 1)
         assert 10240 == value
+        MockWorker.breakout = True
 
     def test_should_not_await_if_the_value_is_ready(self):
         p = Kernel.spawn(self.return_value)
         assert "bacon" == Kernel.await(p, 1)
+        MockWorker.breakout = True
 
 class MockWorker:
     breakout = False
